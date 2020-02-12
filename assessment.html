@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JS Testing</title>
+</head>
+<body>
+    <p>Look in console</p>
+    <script>
+        // test inputs for raceWinner
+        const arr = [
+            {
+                name: 'Cynthia',
+                time: 'dnf'
+            },
+            {
+                name: 'Samuel',
+                time: '05:42:14'
+            },
+            {
+                name: 'Fred',
+                time: '05:12:53'
+            }
+        ]
+
+        const arr2 = [
+            {
+                name: 'Samuel',
+                time: '05:42:14'
+            },
+            {
+                name: 'Cynthia',
+                time: 'dnf'
+            }
+        ]
+
+        const arr3 = [
+            {
+                name: 'Fred',
+                time: 'dnf'
+            },
+            {
+                name: 'Cynthia',
+                time: 'dnf'
+            }
+        ]
+
+        function raceWinner(arr) {
+            // if there is only one person in the race and they finished, then they won by no contest
+            if (arr.length === 1 && arr[0]['time'] !== 'dnf') {
+                return `${arr[0]['name']} won by no contest`
+            }
+            // if there is one person and they did not finish or no people, there is no winner
+            else if (arr.length <= 1) {
+                return "There is no winner"
+            }
+            // otherwise, there are at least 2 people
+            else {
+                // start out with first place as first name and time and second place as empty object
+                let firstPlace = arr[0]
+                let secondPlace = {}
+
+                for (let i=1; i<arr.length; i++) {
+                    let person = arr[i]
+                    if (person.time !== 'dnf') {
+                        let timeArr = person.time.split(":")
+                        let hr = timeArr[0]
+                        let min = timeArr[1]
+                        let sec = timeArr[2]
+                        let firstPlaceArr = firstPlace.time.split(":")
+                        let firstHr = firstPlaceArr[0]
+                        let firstMin = firstPlaceArr[1]
+                        let firstSec = firstPlaceArr[2]
+                        // if current person time is less than first place time, we have a new first place
+                        if ((hr < firstHr) || (hr === firstHr && min < firstMin) || (hr === firstHr && min === firstMin && sec < firstSec)) {
+                            // if we have a second place, check if old first place should become new second place
+                            if (secondPlace.time) {
+                                let secondPlaceArr = secondPlace.time.split(":")
+                                let secondHr = secondPlaceArr[0]
+                                let secondMin = secondPlaceArr[1]
+                                let secondSec = secondPlaceArr[2]
+                                if ((firstHr < secondHr) || (firstHr === secondHr && firstMin < secondMin) || (firstHr === secondHr && firstMin === secondMin && firstSec < secondSec)) {
+                                    secondPlace = firstPlace
+                                    firstPlace = arr[i]
+                                }
+                            }
+                            // if not, just make old first place new second place and update first place
+                            else {
+                                secondPlace = firstPlace
+                                firstPlace = arr[i]
+                            }
+                        }
+                        else if ((hr < secondHr) || (hr === secondHr && min < secondMin) || (hr === secondHr && min === secondMin && sec < secondSec)) {
+                            // if we have a second place, check if current should become new second place
+                            if (secondPlace.time) {
+                                let secondPlaceArr = secondPlace.time.split(":")
+                                let secondHr = secondPlaceArr[0]
+                                let secondMin = secondPlaceArr[1]
+                                let secondSec = secondPlaceArr[2]
+                                if ((hr < secondHr) || (hr === secondHr && min < secondMin) || (hr === secondHr && min === secondMin && sec < secondSec)) {
+                                    secondPlace = arr[i]
+                                }
+                            }
+                            // if not, just make current new second place and update first place
+                            else {
+                                secondPlace = arr[i]
+                            }
+                        }
+                    }
+                }
+                if (firstPlace.name && firstPlace.time !== 'dnf') {
+                    if (secondPlace.name) {
+                        let firstPlaceArr = firstPlace.time.split(":")
+                        let firstHr = firstPlaceArr[0]
+                        let firstMin = firstPlaceArr[1]
+                        let firstSec = firstPlaceArr[2]
+                        let secondPlaceArr = secondPlace.time.split(":")
+                        let secondHr = secondPlaceArr[0]
+                        let secondMin = secondPlaceArr[1]
+                        let secondSec = secondPlaceArr[2]
+                        // console.log("first", firstPlace)
+                        // console.log("second", secondPlace)
+                        let finalHr = Math.abs(secondHr - firstHr)
+                        let finalMin = Math.abs(secondMin - firstMin)
+                        let finalSec = Math.abs(secondSec - firstSec)
+                        return `${firstPlace.name} won by ${finalHr} hours, ${finalMin} minutes, and ${finalSec} seconds`
+                    }
+                    // if we don't have a second place object, means all others were dnf
+                    else {
+                        return `${firstPlace.name} won by no contest`
+                    }
+                }
+                // if we don't have a first place object, means all were dnf
+                else {
+                    return "There is no winner"
+                }
+            }
+        }
+
+        // test inputs for median sort
+        const medianSortArr = [3, [-2, 4, 9]]
+        const medianSortArr2 = [[12, 9, 1, 25], 4]
+        const medianSortArr3 = [[2.4, 0.2, 9.8], 0, [-1], [-9, -4]]
+
+        function medianSort(arr) {
+            // will hold key value pairs of median: input
+            let mediansObj = {}
+            for (let i=0; i<arr.length; i++) {
+                // if we have an array, need to find the median
+                if (Array.isArray(arr[i])) {
+                    let sortedArr = arr[i].sort((a,b) => a-b)
+                    let medianNum
+                    // if the length is even, need to get average of 2 middle values
+                    if (sortedArr.length % 2 === 0) {
+                        let lowMed = Math.floor((sortedArr.length - 1) / 2)
+                        let highMed = Math.ceil((sortedArr.length - 1) / 2)
+                        medianNum = (sortedArr[lowMed] + sortedArr[highMed]) / 2
+                        mediansObj[medianNum] = arr[i]
+                    }
+                    // otherwise the length is odd and can take middle value
+                    else {
+                        let median = (sortedArr.length - 1) / 2
+                        medianNum = sortedArr[median]
+                        mediansObj[medianNum] = arr[i]
+                    }
+                }
+                // if its not an array, just add the number
+                else {
+                    mediansObj[arr[i]] = arr[i]
+                }
+            }
+            // sorting the keys from our mediansObj, which are the median values
+            let sortedKeys = Object.keys(mediansObj).sort((a,b) => a-b)
+            // mapping over the sorted keys to get the value associated with them
+            return sortedKeys.map(key => mediansObj[key])
+        }
+
+        const board = "X X\n OO\nXOO"
+
+        function ticTacToe(str) {
+            // find empty spaces since that is the only places a move can be made
+            // make a 2d board using nested for loops
+            let strArr = str.split("\n")
+            for (let i=0; i<strArr.length; i++) {
+                for (let j=0; j<strArr.length; j++) {
+                    strArr[i][j]
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>

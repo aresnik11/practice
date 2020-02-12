@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+    <p>Test</p>
+</body>
+<script>
+    const n=5;
+    for (let i=0; i<n; i++) {
+        let btn=document.createElement('button')
+        btn.appendChild(document.createTextNode('Button' + i))
+        btn.addEventListener('click', function() {
+            console.log(i)
+        })
+        document.body.appendChild(btn)
+    }
+</script>
